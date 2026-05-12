@@ -9,7 +9,7 @@
             <li onclick="window.location='tagihan.php'" class="<?= basename($_SERVER['PHP_SELF']) == 'tagihan.php' ? 'active' : '' ?>"><i class="fas fa-file-alt"></i> Tagihan</li>
             <li onclick="window.location='pengeluaran.php'" class="<?= basename($_SERVER['PHP_SELF']) == 'pengeluaran.php' ? 'active' : '' ?>"><i class="fas fa-wallet"></i> Pengeluaran</li>
             <li onclick="window.location='laporan.php'" class="<?= basename($_SERVER['PHP_SELF']) == 'laporan.php' ? 'active' : '' ?>"><i class="fas fa-chart-bar"></i> Laporan</li>
-            <li><i class="fab fa-whatsapp"></i> WhatsApp</li>
+            <li onclick="window.location='whatsapp.php'" class="<?= basename($_SERVER['PHP_SELF']) == 'whatsapp.php' ? 'active' : '' ?>"><i class="fab fa-whatsapp"></i> WhatsApp</li>
         </ul>   
     </div>
     <div class="user-profile">

@@ -28,7 +28,12 @@ if (isset($_POST['simpan_pembayaran'])) {
                   VALUES ('$id_penghuni', '$tgl', '$no_invoice', '$metode', '$jumlah')";
     
     if (mysqli_query($conn, $query_ins)) {
+        // 1. Update status di tabel penghuni
         mysqli_query($conn, "UPDATE penghuni SET status_pembayaran = 'Lunas' WHERE id_penghuni = '$id_penghuni'");
+        
+        // 2. [INI YANG BARU] Update status di tabel tagihan menjadi Lunas
+        mysqli_query($conn, "UPDATE tagihan SET status_tagihan = 'Lunas' WHERE id_penghuni = '$id_penghuni'");
+        
         echo "<script>alert('Pembayaran Berhasil Dicatat!'); window.location='pembayaran.php';</script>";
     }
 }

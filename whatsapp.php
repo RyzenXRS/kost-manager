@@ -1,17 +1,17 @@
 <?php
 session_start();
-require 'koneksi.php'; 
+require 'koneksi.php';
 
 if (!isset($_SESSION['role']) || $_SESSION['role'] != 'admin') {
     header("location:login.php");
     exit();
 }
 
-$sql = "SELECT tagihan.*, penghuni.nama_lengkap, kamar.nomor_kamar 
-        FROM tagihan 
-        JOIN penghuni ON tagihan.id_penghuni = penghuni.id_penghuni
-        LEFT JOIN kamar ON penghuni.id_kamar = kamar.id_kamar
-        ORDER BY tagihan.jatuh_tempo ASC";
+$sql = "SELECT p.nama_lengkap, p.no_hp, p.status_pembayaran, k.nomor_kamar 
+        FROM penghuni p
+        LEFT JOIN kamar k ON p.id_kamar = k.id_kamar
+        WHERE p.status_penyewa = 'Aktif'
+        ORDER BY p.nama_lengkap ASC";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -20,7 +20,7 @@ $result = mysqli_query($conn, $sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manajemen Tagihan - KostManager</title>
+    <title>Kontak WhatsApp - KostManager</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -38,9 +38,8 @@ $result = mysqli_query($conn, $sql);
         th { background: #f8fafc; color: #64748b; font-weight: 600; text-align: left; padding: 15px; border-bottom: 2px solid #edf2f7; text-transform: uppercase; font-size: 12px;}
         td { padding: 15px; border-bottom: 1px solid #edf2f7; vertical-align: middle; color: #1e293b; font-size: 14px;}
         
-        .badge-lunas { background: #dcfce7; color: #16a34a; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-        .badge-belum { background: #fee2e2; color: #dc2626; padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; }
-        .badge-kamar { background: #e0e7ff; color: #4338ca; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; }
+        .btn-wa { background: #22c55e; color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 13px; transition: 0.3s; }
+        .btn-wa:hover { background: #16a34a; }
     </style>
 </head>
 <body>
@@ -50,7 +49,7 @@ $result = mysqli_query($conn, $sql);
     <div class="main-wrapper">
         <header class="header">
             <div class="header-left">
-                <h2 style="margin:0; font-size: 18px; color: #1e293b;">Manajemen Tagihan</h2>
+                <h2 style="margin:0; font-size: 18px; color: #1e293b;">Buku Kontak WA</h2>
             </div>
             <div class="header-right">
                 <span style="color: #64748b; font-size: 14px;"><i class="far fa-calendar-alt"></i> <?= date('d M Y') ?></span>
@@ -59,45 +58,52 @@ $result = mysqli_query($conn, $sql);
 
         <main class="main-content">
             <div class="data-section">
-                <div style="margin-bottom: 25px;">
-                    <h1 style="margin: 0; font-size: 24px; color: #1e293b;">Daftar Tagihan</h1>
-                    <p style="color: #64748b; margin-top: 5px;">Total tagihan aktif: <?= mysqli_num_rows($result); ?></p>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                    <div>
+                        <h1 style="margin: 0; font-size: 24px; color: #1e293b;">Kontak Penyewa</h1>
+                        <p style="color: #64748b; margin-top: 5px;">Daftar nomor WhatsApp penghuni aktif.</p>
+                    </div>
                 </div>
 
                 <div style="overflow-x: auto;">
                     <table>
                         <thead>
                             <tr>
-                                <th>Penghuni</th>
+                                <th>Nama Penyewa</th>
                                 <th>Kamar</th>
-                                <th>Bulan</th>
-                                <th>Jumlah</th>
-                                <th>Jatuh Tempo</th>
-                                <th>Status</th>
+                                <th>Nomor WA</th>
+                                <th>Status Pembayaran</th>
+                                <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if(mysqli_num_rows($result) > 0): ?>
-                                <?php while($row = mysqli_fetch_assoc($result)): ?>
+                                <?php while($row = mysqli_fetch_assoc($result)): 
+                                    $no_wa = preg_replace('/^0/', '62', trim($row['no_hp']));
+                                    $no_wa = preg_replace('/\D/', '', $no_wa); 
+                                ?>
                                 <tr>
                                     <td><strong><?= htmlspecialchars($row['nama_lengkap']) ?></strong></td>
-                                    <td><span class="badge-kamar">Kamar <?= htmlspecialchars($row['nomor_kamar']) ?></span></td>
-                                    <td><?= htmlspecialchars($row['bulan_tagihan']) ?></td>
-                                    <td><strong>Rp <?= number_format($row['jumlah_tagihan'], 0, ',', '.') ?></strong></td>
-                                    <td><?= date('d M Y', strtotime($row['jatuh_tempo'])) ?></td>
+                                    <td><span style="background:#e0e7ff; color:#4338ca; padding: 5px 12px; border-radius: 15px; font-size: 12px; font-weight:600;">Kamar <?= htmlspecialchars($row['nomor_kamar']) ?></span></td>
+                                    <td style="font-family: monospace; font-size: 14px;"><?= htmlspecialchars($row['no_hp']) ?></td>
                                     <td>
-                                        <?php if($row['status_tagihan'] == 'Lunas'): ?>
-                                            <span class="badge-lunas">Lunas</span>
+                                        <?php if($row['status_pembayaran'] == 'Lunas'): ?>
+                                            <span style="background: #dcfce7; color: #16a34a; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight:600;">Lunas</span>
                                         <?php else: ?>
-                                            <span class="badge-belum"><i class="fas fa-exclamation-circle"></i> Belum Bayar</span>
+                                            <span style="background: #fee2e2; color: #dc2626; padding: 5px 10px; border-radius: 6px; font-size: 12px; font-weight:600;">Belum Bayar</span>
                                         <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <a href="https://wa.me/<?= $no_wa ?>?text=Halo%20<?= urlencode($row['nama_lengkap']) ?>,%20ini%20dari%20pengurus%20KostManager." target="_blank" class="btn-wa">
+                                            <i class="fab fa-whatsapp"></i> Chat WA
+                                        </a>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="6" style="text-align: center; padding: 40px; color: #94a3b8;">
-                                        Belum ada data tagihan yang tercatat.
+                                    <td colspan="5" style="text-align: center; padding: 40px; color: #94a3b8;">
+                                        Belum ada kontak penghuni.
                                     </td>
                                 </tr>
                             <?php endif; ?>
