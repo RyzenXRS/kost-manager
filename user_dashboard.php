@@ -85,14 +85,7 @@ if (!function_exists('formatRupiah')) {
     <?php include 'includes/user_sidebar.php'; ?>
 
     <div class="main-wrapper">
-        <header class="header">
-            <div class="header-left">
-                <h2 style="margin:0; font-size: 18px; color: #1e293b;">Panel Kontrol Penghuni</h2>
-            </div>
-            <div class="header-right">
-                <span style="color: #64748b; font-size: 14px;"><i class="far fa-calendar-alt"></i> <?= date('d M Y') ?></span>
-            </div>
-        </header>
+        <?php include 'includes/user_header.php'; ?>
 
         <main class="main-content">
             <!-- Ucapan Selamat Datang -->

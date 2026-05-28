@@ -13,7 +13,8 @@ if (isset($_POST['login'])) {
         session_start();
         $_SESSION['role'] = $row['role'];
         $_SESSION['nama_lengkap'] = $row['nama_lengkap'];
-        
+        $_SESSION['id_user'] = $row['id_user'];
+        $_SESSION['id_penghuni'] = $row['id_penghuni'] ?? 0;
         // Ambil id_penghuni yang barusan kita buat di kolom users
         // Pastikan di database kolom ini sudah kamu isi angka (seperti 7), jangan NULL
         $_SESSION['id_penghuni'] = $row['id_penghuni']; 
