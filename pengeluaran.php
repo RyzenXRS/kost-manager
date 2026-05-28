@@ -32,7 +32,7 @@ $sql = "SELECT * FROM pengeluaran ORDER BY tanggal DESC";
 $result = mysqli_query($conn, $sql);
 ?>
 
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="id">
 <head>
     <meta charset="UTF-8">

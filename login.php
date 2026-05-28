@@ -17,7 +17,7 @@ if (isset($_POST['login'])) {
         // Ambil id_penghuni yang barusan kita buat di kolom users
         // Pastikan di database kolom ini sudah kamu isi angka (seperti 7), jangan NULL
         $_SESSION['id_penghuni'] = $row['id_penghuni']; 
-
+        $_SESSION['foto_profil'] = $row['foto_profil'];
         if ($row['role'] == 'admin') {
             header("location:admin_dashboard.php");
         } else {
